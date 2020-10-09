@@ -3,11 +3,12 @@
 //Para consumir un archivo que queremos
 include_once 'conexion.php';
 
+//**********LEER ***********/
 //Apuntar a las filas de la tabla colores
-$table_colors = 'SELECT * FROM colores';
+$sql_leer = 'SELECT * FROM colores';
 
 //Preparacion del contenido para luego ser mostrado
-$get_allColors = $pdo->prepare($table_colors);
+$get_allColors = $pdo->prepare($sql_leer);
 $get_allColors->execute();
 
 //Obtener todos las filas de la tabla colores
@@ -15,7 +16,28 @@ $get_allColors->execute();
 //Y se le indica que se quiere obtener
 $result = $get_allColors->fetchAll();
 echo ('<pre></pre>');
-var_dump($result);
+
+//*********** AGREGAR *********/
+//Metodo POST
+if($_POST) {
+	//Guardar en una variable lo enviado mediante POST por el input 'color'
+	$color =  $_POST['color'];
+
+	//Guardar en una variable lo enviado mediante POST por el input 'descripcion'
+	$descripcion = $_POST['descripcion'];
+
+
+	//Metodo agregar, luego seleccionas la tabla (para hacerle referencia) y despues los campos
+	//Para finalizar se coloca los valores a agregar, los ? son para mayor seguridad
+	$sql_agregar = 'INSERT INTO colores (color, descripcion) VALUES (?,?)';
+
+	//Preparamos para enviar
+	$add = $pdo->prepare($sql_agregar);
+	$add->execute([$color, $descripcion]);
+
+	header('location:index.php');
+
+}
 
 ?>
 
@@ -45,6 +67,15 @@ var_dump($result);
 				
 				<!-- Se cierra el foreach colocando un endforeach -->
 				<?php endforeach ?>
+			</div>
+			
+			<div class="col-md-6">
+				<h2>Agregar elementos</h2>
+					<form method="POST">
+					<input type="text" class="form-control mt-3" name="color">
+					<input type="text" class="form-control mt-3" name="descripcion">
+					<button class="btn btn-primary mt-3">Agregar</button>
+					</form>
 			</div>
 		</div>
 	</div>
